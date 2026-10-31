@@ -1,4 +1,4 @@
-const { test } = require("node:test");
+﻿const { test } = require("node:test");
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
@@ -70,15 +70,20 @@ function runtime() {
   function load(filename) {
     const absolute = path.resolve(sourceDirectory, filename);
     if (modules.has(absolute)) return modules.get(absolute).exports;
-    if (!compiled.has(absolute)) {
-      compiled.set(absolute, ts.transpileModule(fs.readFileSync(absolute, "utf8"), {
-        compilerOptions: {
-          target: ts.ScriptTarget.ES2020,
-          module: ts.ModuleKind.CommonJS,
-          experimentalDecorators: true,
-        },
-      }).outputText);
-    }
+ if (!compiled.has(absolute)) {
+  const source = fs.readFileSync(absolute, "utf8").replaceAll(
+    "import.meta.url",
+    "'http://localhost/lg-remote-control.js'"
+  );
+
+  compiled.set(absolute, ts.transpileModule(source, {
+    compilerOptions: {
+      target: ts.ScriptTarget.ES2020,
+      module: ts.ModuleKind.CommonJS,
+      experimentalDecorators: true,
+    },
+  }).outputText);
+}
     const module = { exports: {} };
     modules.set(absolute, module);
     const requireMock = (name) => {
@@ -401,4 +406,31 @@ test("volume clicks and holds keep using the configured services on mouse and to
       ]));
     }
   }
+});
+
+test("custom local image paths are supported without changing existing icon handling", () => {
+  const { Card } = fixture();
+
+  const imagePath = "/local/images/rtl_logo_icon.png";
+  const image = markup(Card.getIcon(imagePath));
+
+  assert.match(image, /<img/);
+  assert.match(image, /src="\/local\/images\/rtl_logo_icon\.png"/);
+  assert.match(image, /object-fit: contain/);
+
+  const mdi = markup(Card.getIcon("mdi:netflix"));
+
+  assert.match(mdi, /<ha-icon/);
+  assert.match(mdi, /icon="mdi:netflix"/);
+
+  const builtInIconName = Object.keys(Card.iconMapping)[0];
+
+  assert.ok(builtInIconName);
+
+  const builtInIcon = Card.getIcon(builtInIconName);
+
+  assert.equal(
+    markup(builtInIcon),
+    markup(Card.iconMapping[builtInIconName])
+  );
 });

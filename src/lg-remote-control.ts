@@ -552,12 +552,37 @@ class LgRemoteControl extends LitElement {
         return `${defaultStyle} ${this.config.keys?.[key]?.style || ""}`.trim();
     }
 
-    static getIcon(iconName) {
-        return Object.keys(LgRemoteControl.iconMapping).includes(iconName)
-            ? LgRemoteControl.iconMapping[iconName]
-            : html`<ha-icon style="height: 70%; width: 70%;" icon="${iconName}"/>`;
+static getIcon(iconName) {
+    if (typeof iconName === "string") {
+        // Home Assistant local files (/config/www/)
+        if (iconName.startsWith("/local/")) {
+            return html`<img
+                src="${iconName}"
+                alt=""
+                style="height: 90%; width: 90%; object-fit: contain;"
+            />`;
+        }
+
+       // Images bundled with this custom card
+if (iconName.startsWith("images/")) {
+    const imageUrl = new URL(iconName, import.meta.url).href;
+
+    return html`<img
+        src="${imageUrl}"
+        alt=""
+        style="height: 90%; width: 90%; object-fit: contain;"
+    />`;
+}
     }
 
+    // Original built-in icons and Material Design Icons
+    return Object.keys(LgRemoteControl.iconMapping).includes(iconName)
+        ? LgRemoteControl.iconMapping[iconName]
+        : html`<ha-icon
+            style="height: 70%; width: 70%;"
+            icon="${iconName}"
+        />`;
+}
     static get styles() {
         return css`
           @keyframes blinker {

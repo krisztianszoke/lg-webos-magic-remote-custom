@@ -5,6 +5,7 @@ import babel from "@rollup/plugin-babel";
 import terser from "@rollup/plugin-terser";
 import serve from "rollup-plugin-serve";
 import json from "@rollup/plugin-json";
+import copy from "rollup-plugin-copy";
 
 const dev = process.env.ROLLUP_WATCH;
 
@@ -26,8 +27,17 @@ const plugins = [
     babel({
         exclude: "node_modules/**",
     }),
-    dev && serve(serveopts),
+        dev && serve(serveopts),
     !dev && terser(),
+    !dev && copy({
+        targets: [
+            {
+                src: "images/*",
+                dest: "dist/images",
+            },
+        ],
+        hook: "writeBundle",
+    }),
 ];
 
 export default [

@@ -1,6 +1,6 @@
 {
-    "name": "lg-remote-card",
-    "version": "v0.0.0-master",
+    "name": "lg-webos-magic-remote-custom",
+    "version": "1.0.0",
     "description": "LG Remote card",
     "keywords": [
         "home-assistant",
@@ -11,7 +11,7 @@
         "custom-cards"
     ],
     "module": "lg-remote-card.js",
-    "repository": "git@github.com:madmicio/LG-WebOS-Remote-Control.git",
+    "repository": "https://github.com/krisztianszoke/lg-webos-magic-remote-custom.git",
     "author": "Maurizio <madmicio@tiscali.it>",
     "license": "MIT",
     "dependencies": {
@@ -37,6 +37,7 @@
         "prettier": "^3.1.1",
         "replace-in-file": "^7.0.2",
         "rollup": "^4.9.1",
+        "rollup-plugin-copy": "^3.5.0",
         "rollup-plugin-serve": "^2.0.3",
         "ts-lit-plugin": "^2.0.1",
         "typescript": "^5.3.3"
